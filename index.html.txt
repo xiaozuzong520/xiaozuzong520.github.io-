@@ -1,0 +1,501 @@
+﻿ <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>狗灿姐姐们 520快乐 💕</title>
+    <style>
+        :root {
+            --bg-deep: #0a0015;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            background: radial-gradient(ellipse at center, #1a0a2e 0%, #0d0018 30%, #050010 70%, #000008 100%);
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'WenQuanYi Micro Hei', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            touch-action: manipulation;
+            position: relative;
+        }
+
+        /* 星空闪烁背景 */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: starTwinkle var(--dur) ease-in-out infinite;
+            animation-delay: var(--delay);
+            opacity: 0;
+        }
+        @keyframes starTwinkle {
+            0%,
+            100% {
+                opacity: 0.2;
+                transform: scale(0.8);
+            }
+            50% {
+                opacity: 0.9;
+                transform: scale(1.3);
+            }
+        }
+
+        /* Canvas烟花层 */
+        #fireworkCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* 爱心飘落容器 */
+        .hearts-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 3;
+            overflow: visible;
+        }
+        .floating-heart {
+            position: absolute;
+            font-size: var(--size);
+            color: var(--color);
+            animation: heartFloat var(--dur) var(--easing) infinite;
+            animation-delay: var(--delay);
+            opacity: 0;
+            filter: blur(0.5px);
+            text-shadow: 0 0 8px currentColor;
+            pointer-events: none;
+            will-change: transform, opacity;
+        }
+        @keyframes heartFloat {
+            0% {
+                transform: translateY(105vh) translateX(0px) rotate(0deg) scale(0.6);
+                opacity: 0;
+            }
+            8% {
+                opacity: 0.85;
+            }
+            25% {
+                transform: translateY(75vh) translateX(var(--drift1)) rotate(var(--rot1)) scale(1);
+                opacity: 0.9;
+            }
+            50% {
+                transform: translateY(45vh) translateX(var(--drift2)) rotate(var(--rot2)) scale(0.95);
+                opacity: 0.75;
+            }
+            75% {
+                transform: translateY(20vh) translateX(var(--drift3)) rotate(var(--rot3)) scale(0.8);
+                opacity: 0.45;
+            }
+            92% {
+                opacity: 0.1;
+            }
+            100% {
+                transform: translateY(-10vh) translateX(var(--drift4)) rotate(var(--rot4)) scale(0.3);
+                opacity: 0;
+            }
+        }
+/* 文字层 */
+        .text-layer {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            pointer-events: none;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: clamp(8px, 2vh, 20px);
+        }
+        .text-line1 {
+            font-size: clamp(28px, 6vw, 48px);
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            background: linear-gradient(180deg, #ffe7c2 0%, #ffb8d4 30%, #ff8ec4 55%, #ffd1e8 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 18px rgba(255, 150, 180, 0.8)) drop-shadow(0 0 40px rgba(255, 120, 160, 0.5));
+            animation: textGlow 2.5s ease-in-out infinite;
+            line-height: 1.2;
+        }
+        .text-line2 {
+            font-size: clamp(36px, 8vw, 64px);
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            background: linear-gradient(180deg, #ffdd57 0%, #ff6b9d 25%, #ff3d7f 50%, #ff9ec4 75%, #ffe0b0 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 22px rgba(255, 100, 140, 0.9)) drop-shadow(0 0 50px rgba(255, 80, 120, 0.6)) drop-shadow(0 0 80px rgba(255, 200, 100, 0.4));
+            animation: textGlowStrong 2s ease-in-out infinite;
+            animation-delay: 0.3s;
+            line-height: 1.2;
+        }
+        @keyframes textGlow {
+            0%,
+            100% {
+                filter: drop-shadow(0 0 18px rgba(255, 150, 180, 0.8)) drop-shadow(0 0 40px rgba(255, 120, 160, 0.5));
+            }
+            50% {
+                filter: drop-shadow(0 0 30px rgba(255, 180, 200, 1)) drop-shadow(0 0 60px rgba(255, 140, 170, 0.8)) drop-shadow(0 0 100px rgba(255, 160, 180, 0.4));
+            }
+        }
+        @keyframes textGlowStrong {
+            0%,
+            100% {
+                filter: drop-shadow(0 0 22px rgba(255, 100, 140, 0.9)) drop-shadow(0 0 50px rgba(255, 80, 120, 0.6)) drop-shadow(0 0 80px rgba(255, 200, 100, 0.4));
+            }
+            50% {
+                filter: drop-shadow(0 0 35px rgba(255, 120, 160, 1)) drop-shadow(0 0 70px rgba(255, 100, 140, 0.9)) drop-shadow(0 0 120px rgba(255, 220, 130, 0.6)) drop-shadow(0 0 160px rgba(255, 180, 100, 0.3));
+            }
+        }
+
+        /* 底部提示 */
+        .tap-hint {
+            position: fixed;
+            bottom: clamp(40px, 8vh, 80px);
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
+            pointer-events: none;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: clamp(12px, 2.5vw, 16px);
+            letter-spacing: 0.15em;
+            animation: hintPulse 2.5s ease-in-out infinite;
+            text-align: center;
+        }
+        @keyframes hintPulse {
+            0%,
+            100% {
+                opacity: 0.35;
+                transform: translateX(-50%) translateY(0);
+            }
+            50% {
+                opacity: 0.85;
+                transform: translateX(-50%) translateY(-8px);
+            }
+        }
+
+        /* 响应式调整 */
+        @media screen and (max-width: 360px) {
+            .text-line1 {
+                font-size: 24px;
+            }
+            .text-line2 {
+                font-size: 32px;
+            }
+            .tap-hint {
+                bottom: 30px;
+                font-size: 11px;
+            }
+        }
+        @media screen and (min-width: 768px) {
+            .text-line1 {
+                font-size: 52px;
+            }
+            .text-line2 {
+                font-size: 72px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 星空背景 -->
+    <div class="stars-container" id="starsContainer"></div>
+
+    <!-- 烟花Canvas -->
+    <canvas id="fireworkCanvas"></canvas>
+
+    <!-- 爱心飘落层 -->
+    <div class="hearts-layer" id="heartsLayer"></div>
+
+    <!-- 文字 -->
+    <div class="text-layer">
+        <span class="text-line1">狗灿姐姐们</span>
+        <span class="text-line2">520 快乐 💕</span>
+    </div>
+
+    <!-- 点击提示 -->
+    <div class="tap-hint">✨ 点击屏幕放烟花 ✨</div>
+
+    <script>
+        (function() {
+            // ==================== 星空背景 ====================
+            const starsContainer = document.getElementById('starsContainer');
+            const starCount = 80;
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                const size = Math.random() * 2.5 + 1;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.setProperty('--dur', (Math.random() * 3 + 2) + 's');
+                star.style.setProperty('--delay', (Math.random() * 5) + 's');
+                starsContainer.appendChild(star);
+            }
+
+            // ==================== 烟花Canvas系统 ====================
+            const canvas = document.getElementById('fireworkCanvas');
+            const ctx = canvas.getContext('2d');
+            let canvasW, canvasH;
+
+            function resizeCanvas() {
+                canvasW = window.innerWidth;
+                canvasH = window.innerHeight;
+                canvas.width = canvasW;
+                canvas.height = canvasH;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            window.addEventListener('orientationchange', () => {
+                setTimeout(resizeCanvas, 200);
+            });
+
+            // 粒子类
+            class Particle {
+                constructor(x, y, color, velocity, life, size) {
+                    this.x = x;
+                    this.y = y;
+                    this.color = color;
+                    this.velocity = velocity;
+                    this.life = life;
+                    this.maxLife = life;
+                    this.size = size || (Math.random() * 2.5 + 1.5);
+                    this.gravity = 0.04;
+                    this.friction = 0.985;
+                    this.alpha = 1;
+                }
+                update() {
+                    this.velocity.x *= this.friction;
+                    this.velocity.y *= this.friction;
+                    this.velocity.y += this.gravity;
+                    this.x += this.velocity.x;
+                    this.y += this.velocity.y;
+                    this.life--;
+                    this.alpha = this.life / this.maxLife;
+                }
+                draw(ctx) {
+                    ctx.save();
+                    ctx.globalAlpha = this.alpha;
+                    ctx.fillStyle = this.color;
+                    ctx.shadowColor = this.color;
+                    ctx.shadowBlur = this.size * 3;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    // 光晕
+                    ctx.globalAlpha = this.alpha * 0.4;
+                    ctx.shadowBlur = this.size * 8;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size * 1.8, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+                get isDead() { return this.life <= 0; }
+            }
+
+            // 烟花火箭类
+            class Rocket {
+                constructor(startX, startY, targetX, targetY) {
+                    this.x = startX;
+                    this.y = startY;
+                    this.targetX = targetX;
+                    this.targetY = targetY;
+                    this.speed = Math.random() * 4 + 7;
+                    const dx = targetX - startX;
+                    const dy = targetY - startY;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    this.vx = (dx / dist) * this.speed;
+                    this.vy = (dy / dist) * this.speed;
+                    this.trail = [];
+                    this.maxTrail = 18;
+                    this.alive = true;
+                    this.trailColor = `hsl(${Math.random()*30+20}, 100%, ${Math.random()*30+55}%)`;
+                }
+                update() {
+                    this.trail.push({ x: this.x, y: this.y, life: 8 });
+                    if (this.trail.length > this.maxTrail) this.trail.shift();
+                    this.trail.forEach(t => t.life--);
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    const dx = this.targetX - this.x;
+                    const dy = this.targetY - this.y;
+                    if (Math.sqrt(dx * dx + dy * dy) < 12) {
+                        this.alive = false;
+                    }
+                    if (this.y < -50 || this.y > canvasH + 50 || this.x < -50 || this.x > canvasW + 50) {
+                        this.alive = false;
+                    }
+                }
+                draw(ctx) {
+                    // 拖尾
+                    for (let i = 0; i < this.trail.length; i++) {
+                        const t = this.trail[i];
+                        const alpha = t.life / 8;
+                        ctx.save();
+                        ctx.globalAlpha = alpha * 0.7;
+                        ctx.fillStyle = this.trailColor;
+                        ctx.shadowColor = this.trailColor;
+                        ctx.shadowBlur = 5;
+                        ctx.beginPath();
+                        ctx.arc(t.x, t.y, 2, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.restore();
+                    }
+        // 火箭主体
+                    ctx.save();
+                    ctx.fillStyle = '#fff';
+                    ctx.shadowColor = '#ffdd99';
+                    ctx.shadowBlur = 10;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, 3.5, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = this.trailColor;
+                    ctx.shadowColor = this.trailColor;
+                    ctx.shadowBlur = 14;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+
+            // 烟花爆炸
+            class Firework {
+                constructor(x, y) {
+                    this.particles = [];
+                    this.x = x;
+                    this.y = y;
+                    this.alive = true;
+                    const particleCount = Math.floor(Math.random() * 60 + 80);
+                    const hueBase = Math.random() * 360;
+                    const colorScheme = Math.floor(Math.random() * 4);
+
+                    for (let i = 0; i < particleCount; i++) {
+                        let hue, sat, light;
+                        if (colorScheme === 0) {
+                            // 粉-红-金色系
+                            hue = hueBase + Math.random() * 40 - 20;
+                            sat = 85 + Math.random() * 15;
+                            light = 45 + Math.random() * 35;
+                        } else if (colorScheme === 1) {
+                            // 紫-蓝-粉系
+                            hue = 260 + Math.random() * 80;
+                            sat = 70 + Math.random() * 30;
+                            light = 50 + Math.random() * 30;
+                        } else if (colorScheme === 2) {
+                            // 金-橙-红系
+                            hue = 15 + Math.random() * 50;
+                            sat = 90 + Math.random() * 10;
+                            light = 50 + Math.random() * 30;
+                        } else {
+                            // 多彩混合
+                            hue = Math.random() * 360;
+                            sat = 80 + Math.random() * 20;
+                            light = 48 + Math.random() * 32;
+                        }
+                        const color = `hsl(${hue}, ${sat}%, ${light}%)`;
+                        const angle = Math.random() * Math.PI * 2;
+                        const speed = Math.random() * 8 + 3;
+                        const velocity = {
+                            x: Math.cos(angle) * speed * (0.7 + Math.random() * 0.6),
+                            y: Math.sin(angle) * speed * (0.7 + Math.random() * 0.6),
+                        };
+                        const life = Math.floor(Math.random() * 35 + 45);
+                        const size = Math.random() * 2.2 + 1.2;
+                        this.particles.push(new Particle(x, y, color, velocity, life, size));
+                    }
+                    // 中心闪光粒子
+                    for (let i = 0; i < 20; i++) {
+                        const color = `hsl(${hueBase+Math.random()*30}, 100%, ${80+Math.random()*20}%)`;
+                        const angle = Math.random() * Math.PI * 2;
+                        const speed = Math.random() * 2 + 0.5;
+                        const velocity = { x: Math.cos(angle) * speed, y: Math.sin(angle) * speed };
+                        this.particles.push(new Particle(x, y, color, velocity, 20 + Math.random() * 25, 1 + Math
+                        .random()));
+                    }
+                }
+                update() {
+                    this.particles.forEach(p => p.update());
+                    this.particles = this.particles.filter(p => !p.isDead);
+                    if (this.particles.length === 0) this.alive = false;
+                }
+                draw(ctx) {
+                    this.particles.forEach(p => p.draw(ctx));
+                }
+            }
+
+            // 全局状态
+            let rockets = [];
+            let fireworks = [];
+            let autoLaunchTimer = 0;
+            let autoLaunchInterval = 55 + Math.random() * 70; // 帧数间隔
+
+            function launchRocket(targetX, targetY) {
+                const startX = targetX + (Math.random() - 0.5) * canvasW * 0.4;
+                const startY = canvasH + 30;
+                const tX = targetX + (Math.random() - 0.5) * 60;
+                const tY = targetY + (Math.random() - 0.5) * 40;
+                rockets.push(new Rocket(startX, startY, Math.max(30, Math.min(canvasW - 30, tX)), Math.max(40, Math.min(
+                    canvasH * 0.6, tY))));
+            }
+
+            function explodeAt(x, y) {
+                fireworks.push(new Firework(x, y));
+            }
+
+            // 点击触发
+            document.body.addEventListener('click', (e) => {
+                const x = e.clientX || (e.touches && e.touches[0]?.clientX) || canvasW / 2;
+                const y = e.clientY || (e.touches && e.touches[0]?.clientY) || canvasH * 0.35;
+                launchRocket(x, y - 30);
+                // 同时从底部发射一枚
+                launchRocket(x, canvasH * 0.55 + Math.random() * canvasH * 0.2);
+            });
+            document.body.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1) {
+                    const x = e.touches[0].clientX;
+                    const y = e.touches[0].clientY;
+                    launchRocket(x, y - 30);
+                    launchRocket(x, canvasH * 0.5 + Math.random() * canvasH * 0.25);
+                }
+            }, { passive: true });
+
+            // 动画循环
+            function animate() {
+                ctx.clearRect(0, 0, canvasW, canvasH);
